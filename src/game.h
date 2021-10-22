@@ -18,8 +18,6 @@ class game
 
     private:
         void initWin();
-        void initMenu();
-        void initGame();
 };
 
 #endif // GAME_H
