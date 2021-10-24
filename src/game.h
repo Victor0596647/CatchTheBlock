@@ -1,22 +1,22 @@
 #ifndef GAME_H
 #define GAME_H
-#include <iostream>
-#include <cstdlib>
-#include <string>
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <SFML/System.hpp>
+#include "CatchTheBlock.h"
 
-using namespace sf;
 
-class game
+class Game
 {
     public:
-        sf::RenderWindow* app;
-        game();
-        virtual ~game();
+        Game();
+        virtual ~Game();
+        void run();
+        void update();
+        void render();
+        void updatePollEvents();
 
     private:
+        CatchTheBlock *game;
+        sf::RenderWindow* app;
+        void initGame();
         void initWin();
 };
 

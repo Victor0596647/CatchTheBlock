@@ -1,5 +1,6 @@
 #include "CatchTheBlock.h"
-#include <SFML/Audio.hpp>
+
+using namespace sf;
 
 CatchTheBlock::CatchTheBlock()
 {
@@ -7,20 +8,12 @@ CatchTheBlock::CatchTheBlock()
     initAudio();
     initSprite();
     initText();
-    //Game
-    run();
+
 }
 
 CatchTheBlock::~CatchTheBlock()
 {
 
-}
-
-void CatchTheBlock::run(){
-    while(Game.app->isOpen()){
-        updatePollEvents();
-        render();
-    }
 }
 
 void CatchTheBlock::initSprite(){
@@ -48,7 +41,7 @@ void CatchTheBlock::initAudio(){
 
 void CatchTheBlock::initText(){
     //Font
-    pix.loadFromFile("consola.ttf");
+    pix.loadFromFile("res/consola.ttf");
 
     //Catch Text
     CatchT.setFont(pix);
@@ -78,7 +71,7 @@ void CatchTheBlock::initText(){
     resultWL.setFillColor(Color::White);
     resultWL.setFont(pix);
     resultWL.setCharacterSize(128);
-    resultWL.setPosition(Game.app->getSize().x / 3.5, Game.app->getSize().y / 2.85);
+    resultWL.setPosition( 1280 / 3.5, 720 / 2.85);
 
     //Level Text
     LevelT.setFont(pix);
@@ -93,24 +86,22 @@ void CatchTheBlock::initText(){
     Level.setString(std::to_string(level));
 }
 
-void CatchTheBlock::render(){
-    Game.app->clear();
-    Game.app->draw(resultWL);
-    Game.app->draw(square2);
-    Game.app->draw(square);
-    Game.app->draw(Catch);
-    Game.app->draw(CatchT);
-    Game.app->draw(Speed);
-    Game.app->draw(SpeedT);
-    Game.app->draw(Level);
-    Game.app->draw(LevelT);
-    Game.app->display();
+void CatchTheBlock::render(RenderTarget& target){
+    target.draw(resultWL);
+    target.draw(square2);
+    target.draw(square);
+    target.draw(Catch);
+    target.draw(CatchT);
+    target.draw(Speed);
+    target.draw(SpeedT);
+    target.draw(Level);
+    target.draw(LevelT);
 }
 
-void CatchTheBlock::update(){
-    if(square.getPosition().y < Game.app->getSize().y && !win && !setPause && !Lost){
-            Mouse::setPosition(Vector2i( Mouse::getPosition().x,square2.getPosition().y));
-            Game.app->setMouseCursorVisible(false);
+void CatchTheBlock::update(Window& target){
+    if(square.getPosition().y < target.getSize().y && !getGameWin() && !setPause && !Lost){
+            Mouse::setPosition(Vector2i( Mouse::getPosition().x ,square2.getPosition().y + 250));
+            target.setMouseCursorVisible(false);
             square2.setPosition(Mouse::getPosition().x - 350, 500);
             square.move(0., i);
             if(square2.getGlobalBounds().intersects(square.getGlobalBounds())){
@@ -138,13 +129,13 @@ void CatchTheBlock::update(){
                 Speed.setString(std::to_string(i));
             }
         }
-        if(square.getPosition().y >= Game.app->getSize().y){
+        if(square.getPosition().y >= target.getSize().y){
             Lost = true;
             square.setOutlineColor(Color::Black);
             Mouse::setPosition(Vector2i( Mouse::getPosition().x,Mouse::getPosition().y));
-            Game.app->setMouseCursorVisible(true);
+            target.setMouseCursorVisible(true);
             resultWL.setString("You Lose");
-            if(Keyboard::isKeyPressed(Keyboard::Key::Space)){
+            if(Keyboard::isKeyPressed(Keyboard::Key::Space) || Mouse::isButtonPressed(Mouse::Button::Left) && target.hasFocus() == true){
                 Lost = false;
                 lose.setLoop(false);
                 lose.play();
@@ -153,28 +144,25 @@ void CatchTheBlock::update(){
                 i = 0.550;
                 resultWL.setString("");
                 square.setPosition(600.5f,-100.f);
-                //system("CLS");
-                //std::cout<<"Speed: "<<i<<std::endl;
-                //std::cout<<"Catches: "<<catchCount<<std::endl;
                 Catch.setString(std::to_string(catchCount));
                 Speed.setString(std::to_string(i));
                 Level.setString(std::to_string(level));
             }
         }
-        if (win == true){
+        if (getGameWin() == true){
             square.setOutlineColor(Color::Black);
             Mouse::setPosition(Vector2i( Mouse::getPosition().x,Mouse::getPosition().y));
-            Game.app->setMouseCursorVisible(true);
+            target.setMouseCursorVisible(true);
             resultWL.setString("You Win");
-            if(Keyboard::isKeyPressed(Keyboard::Key::Space)){
-                win = false;
+            if(Keyboard::isKeyPressed(Keyboard::Key::Space) || Mouse::isButtonPressed(Mouse::Button::Left) && target.hasFocus() == true){
+                setGameWin(false);
                 levl.setLoop(false);
                 levl.play();
                 square.setOutlineColor(Color::White);
                 resultWL.setString("");
                 square.setPosition(600.5f,-100.f);
                 if(square.getSize().x < 20.f || level == 5){
-                    level = 1;
+                    level = 0;
                     square.setSize(Vector2f(100.f, 100.f));
                 }else {
                     level++;
@@ -182,40 +170,12 @@ void CatchTheBlock::update(){
                 }
                 catchCount = 0;
                 i = 0.550;
-                //system("CLS");
-                //std::cout<<"Speed: "<<i<<std::endl;
-                //std::cout<<"Catches: "<<catchCount<<std::endl;
                 Catch.setString(std::to_string(catchCount));
                 Speed.setString(std::to_string(i));
                 Level.setString(std::to_string(level));
             }
         }
-        if(setPause && square.getPosition().y != Game.app->getSize().y){
+        if(setPause && square.getPosition().y != target.getSize().y){
             Mouse::setPosition(Vector2i(square2.getPosition().x, square2.getPosition().y));
         }
-}
-
-void CatchTheBlock::updatePollEvents(){
-    Event event;
-    while(Game.app->pollEvent(event)){
-        switch (event.type){
-            case Event::Closed:
-                Game.app->close();
-                break;
-            case Event::KeyPressed:
-                if(Keyboard::isKeyPressed(Keyboard::Key::Escape)){
-                    Game.app->close();
-                }
-            case Event::KeyReleased:
-                if(Keyboard::isKeyPressed(Keyboard::Key::P) && win == false && Lost == false){
-                    if(setPause == 1){
-                        setPause = 0;
-                        Mouse::setPosition(Vector2i( Mouse::getPosition().x + 350, square2.getPosition().y));
-                }else if(setPause == 0) {
-                    setPause = 1;
-                }
-            }
-        }
-    }
-    update();
 }

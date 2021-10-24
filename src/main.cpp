@@ -1,11 +1,10 @@
 #include <iostream>
-#include "CatchTheBlock.h"
+#include "Game.h"
 
-using namespace sf;
+using namespace std;
 
-int main()
-{
-    CatchTheBlock Game;
-    //std::cout<<"Speed: "<<i<<std::endl;
-    //std::cout<<"Catches: "<<catchCount<<std::endl;
+int main(){
+    Game game;
+
+    return 0;
 }
