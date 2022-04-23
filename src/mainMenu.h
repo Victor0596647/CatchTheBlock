@@ -13,6 +13,13 @@ public:
     void render(RenderTarget& target);
     void renderPause(RenderTarget& target);
     void update(Window& target);
+    void liveInput(Event& evnt)
+    {
+        input = evnt.key.code;
+        if(input == Keyboard::Key::P){
+            setGamePause(true);
+        }
+    }
     void setGameStart(bool Astart)
     {
         gameStart = Astart;
@@ -29,7 +36,7 @@ public:
     {
         setPause = Apause;
     }
-    void setTextColor(Color &text,std::string color)
+    void setColor(Color &text,std::string color)
     {
         if(color == "red")
         {
@@ -52,7 +59,6 @@ public:
             text = Color::White;
         }
     }
-    void setGameVolume();
     bool getGameStart()
     {
         return gameStart;
@@ -81,11 +87,20 @@ public:
     {
         return hoverColor;
     }
+    Color getPlayerColor()
+    {
+        return playerColor;
+    }
+    Color getBlockColor(){
+        return blockColor;
+    }
     mainMenu();
-    virtual ~mainMenu();
 
 private:
     //Color
+    Keyboard::Key input;
+    Color playerColor;
+    Color blockColor;
     Color hoverColor;
     Color globalTextColor;
     Color globalHeadingColor;
@@ -100,9 +115,9 @@ private:
 
     int vol = 100;
     int selection;
-    bool option;
+    bool option = false;
     bool quit;
-    bool gameStart;
+    bool gameStart = false;
     bool setPause = 0;
 
     Font pix;
@@ -116,19 +131,15 @@ private:
     //Options
     Text optExit;
     Text optTitle;
-    Text optVol;
-    Text optVolNum;
-    Text optThColor;
-    Text optTColor;
     Text optPColor;
+    Text optPColorSel;
     Text optBColor;
+    Text optBColorSel;
 
     //Pause Menu
     Text pausResume;
     Text pausBackMenu;
     Text pausTitle;
-    Text pausQuit;
-
 };
 
 #endif // MAINMENU_H

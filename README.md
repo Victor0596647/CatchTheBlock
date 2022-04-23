@@ -1,5 +1,5 @@
 # Catch The Block
-A game where YOU the player has to catch a sqaure that's falling before it reaches the end of the window. The square will progressively go faster each catch and the square will get smaller each level, so try to catch them all. <br>
+A game where the YOU the player has to catch a sqaure that's falling before it reaches the end of the window. The square will progressively go faster each catch and the square will get smaller each level, so try to catch them all. <br>
 
 
 
@@ -12,20 +12,20 @@ A game where YOU the player has to catch a sqaure that's falling before it reach
   - [x] Create Level Indication
   - [x] Create Game Win Text
   - [x] Create Game Lose Text
-- [x] Create Main Menu
-  - [x] Create Play Text
-    - [x] Make Play function
-      - [x] Switches to the game on click from the mouse
-  - [x] Create Option Text
-    - [x] Make Option function
+- [ ] Create Main Menu
+  - [ ] Create Play Text
+    - [ ] Make Play function
+      - [ ] Switches to the game on click from the mouse
+  - [ ] Create Option Text
+    - [ ] Make Option function
+      - [ ] Option to set the volume
       - [ ] Option to change the player color
       - [ ] Option to change falling block border color 
-  - [x] Create Quit Text
-    - [x] Make Quit function
-      - [x] Quits the window on click
-- [x] Create Pause Menu
-  - [x] Return to Main Menu
-  - [x] Hotkey "P"
+      - [ ] Option to to change text colors
+  - [ ] Create Quit Text
+    - [ ] Make Quit function
+      - [ ] Quits the window on click   
+   
 ## Credits <br>
 
 **Repository:** [CatchTheBlock](https://github.com/Victor0596647/CatchTheBlock)<br>

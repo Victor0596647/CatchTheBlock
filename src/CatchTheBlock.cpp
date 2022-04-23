@@ -8,12 +8,6 @@ CatchTheBlock::CatchTheBlock()
     initAudio();
     initSprite();
     initText();
-
-}
-
-CatchTheBlock::~CatchTheBlock()
-{
-
 }
 
 void CatchTheBlock::initSprite()
@@ -21,13 +15,13 @@ void CatchTheBlock::initSprite()
     //Block
     square.setSize(Vector2f(100.0f, 100.0f));
     square.setPosition(600.5f,-100.f);
-    square.setOutlineColor(Color::White);
+    square.setOutlineColor(menu.getBlockColor());
     square.setFillColor(Color::Black);
     square.setOutlineThickness(1.0f);
 
     //Player
     square2.setSize(Vector2f(50.0f, 50.0f));
-    square2.setFillColor(Color::Red);
+    square2.setFillColor(menu.getPlayerColor());
 }
 
 void CatchTheBlock::initAudio()
@@ -49,26 +43,26 @@ void CatchTheBlock::initText()
     //Catch Text
     CatchT.setFont(pix);
     CatchT.setPosition(0,0);
-    CatchT.setFillColor(menu.getTextColor());
+    CatchT.setFillColor(Color::White);
     CatchT.setString("Catches: ");
     Catch.setCharacterSize(24);
     Catch.setFont(pix);
     Catch.setPosition(140,0);
-    Catch.setFillColor(menu.getTextColor());
+    Catch.setFillColor(Color::White);
     Catch.setCharacterSize(30);
     Catch.setString(std::to_string(catchCount));
 
     //Speed Text
     SpeedT.setFont(pix);
     SpeedT.setPosition(0,25);
-    SpeedT.setFillColor(menu.getTextColor());
+    SpeedT.setFillColor(Color::White);
     SpeedT.setString("Speed: ");
     Speed.setCharacterSize(24);
     Speed.setFont(pix);
     Speed.setPosition(105,25);
-    Speed.setFillColor(menu.getTextColor());
+    Speed.setFillColor(Color::White);
     Speed.setCharacterSize(30);
-    Speed.setString(std::to_string(i));
+    Speed.setString(std::to_string(currentSpeed));
 
     //Win or Lose Text
     resultWL.setFillColor(Color::White);
@@ -79,14 +73,21 @@ void CatchTheBlock::initText()
     //Level Text
     LevelT.setFont(pix);
     LevelT.setPosition(0,50);
-    LevelT.setFillColor(menu.getTextColor());
+    LevelT.setFillColor(Color::White);
     LevelT.setString("Level: ");
     Level.setCharacterSize(24);
     Level.setFont(pix);
     Level.setPosition(105,50);
-    Level.setFillColor(menu.getTextColor());
+    Level.setFillColor(Color::White);
     Level.setCharacterSize(30);
     Level.setString(std::to_string(level));
+
+    //Pause Text
+    statusPause.setFont(pix);
+    statusPause.setCharacterSize(128);
+    statusPause.setPosition( 1280 / 3.05, 720 / 2.85);
+    statusPause.setFillColor(Color::White);
+    statusPause.setString("Pause");
 }
 
 void CatchTheBlock::render(RenderTarget& target)
@@ -103,26 +104,21 @@ void CatchTheBlock::render(RenderTarget& target)
         target.draw(Level);
         target.draw(LevelT);
     }
-    if(menu.getGameStart() == false)
+    else
     {
         menu.render(target);
-    }
-    if(menu.getGamePause() == true)
-    {
-        menu.renderPause(target);
     }
 }
 
 void CatchTheBlock::update(Window& target)
 {
-    if(menu.getGameStart() == true)
-    {
-        if(square.getPosition().y < target.getSize().y && !getGameWin() && !menu.getGamePause() && !Lost && target.hasFocus())
+    if(menu.getGameStart()){
+        if(square.getPosition().y < target.getSize().y && (!getGameWin() && !menu.getGamePause() && !getGameLose()))
         {
+            Mouse::setPosition(Vector2i( Mouse::getPosition().x, square2.getPosition().y + (target.getPosition().y + 45)));
             target.setMouseCursorVisible(false);
-            Mouse::setPosition(Vector2i( Mouse::getPosition().x,square2.getPosition().y + 250));
-            square2.setPosition(Mouse::getPosition().x - 350, 500);
-            square.move(0., i);
+            square2.setPosition(Mouse::getPosition().x - target.getPosition().x, 500);
+            square.move(0., currentSpeed * time.asMilliseconds());
             if(square2.getGlobalBounds().intersects(square.getGlobalBounds()))
             {
                 square.setPosition(10+(rand()%1100),0.f);
@@ -134,12 +130,12 @@ void CatchTheBlock::update(Window& target)
                     {
                         if(catchCount == l)
                         {
-                            i = i + 0.025;
+                            currentSpeed = currentSpeed + 0.025;
                             l++;
                         }
                         else if (catchCount == 40)
                         {
-                            i = 0;
+                            currentSpeed = 0;
                             win = true;
                             break;
                         }
@@ -150,7 +146,7 @@ void CatchTheBlock::update(Window& target)
                     }
                 }
                 Catch.setString(std::to_string(catchCount));
-                Speed.setString(std::to_string(i));
+                Speed.setString(std::to_string(currentSpeed));
             }
         }
         if(square.getPosition().y >= target.getSize().y)
@@ -159,19 +155,19 @@ void CatchTheBlock::update(Window& target)
             square.setOutlineColor(Color::Black);
             Mouse::setPosition(Vector2i( Mouse::getPosition().x,Mouse::getPosition().y));
             target.setMouseCursorVisible(true);
-            resultWL.setString("You Lost");
-            if(Keyboard::isKeyPressed(Keyboard::Key::Space) || (Mouse::isButtonPressed(Mouse::Button::Left) && target.hasFocus() == true))
+            resultWL.setString("You Lose");
+            if((Keyboard::isKeyPressed(Keyboard::Key::Space) || Mouse::isButtonPressed(Mouse::Button::Right))&& target.hasFocus() == true)
             {
                 Lost = false;
                 lose.setLoop(false);
                 lose.play();
-                square.setOutlineColor(Color::White);
+                square.setOutlineColor(menu.getBlockColor());
                 catchCount = 0;
-                i = 0.550;
+                currentSpeed = speed;
                 resultWL.setString("");
                 square.setPosition(600.5f,-100.f);
                 Catch.setString(std::to_string(catchCount));
-                Speed.setString(std::to_string(i));
+                Speed.setString(std::to_string(currentSpeed));
                 Level.setString(std::to_string(level));
             }
         }
@@ -180,13 +176,13 @@ void CatchTheBlock::update(Window& target)
             square.setOutlineColor(Color::Black);
             Mouse::setPosition(Vector2i( Mouse::getPosition().x,Mouse::getPosition().y));
             target.setMouseCursorVisible(true);
-            resultWL.setString("You Won");
-            if(Keyboard::isKeyPressed(Keyboard::Key::Space) || Mouse::isButtonPressed(Mouse::Button::Left) && target.hasFocus() == true)
+            resultWL.setString("You Win");
+            if((Keyboard::isKeyPressed(Keyboard::Key::Space) || Mouse::isButtonPressed(Mouse::Button::Right)) && target.hasFocus() == true)
             {
                 setGameWin(false);
                 levl.setLoop(false);
                 levl.play();
-                square.setOutlineColor(Color::White);
+                square.setOutlineColor(menu.getBlockColor());
                 resultWL.setString("");
                 square.setPosition(600.5f,-100.f);
                 if(square.getSize().x < 20.f || level == 5)
@@ -200,15 +196,30 @@ void CatchTheBlock::update(Window& target)
                     square.setSize(Vector2f(square.getSize().x - 20, square.getSize().y - 20));
                 }
                 catchCount = 0;
-                i = 0.550;
+                currentSpeed = speed;
                 Catch.setString(std::to_string(catchCount));
-                Speed.setString(std::to_string(i));
+                Speed.setString(std::to_string(currentSpeed));
                 Level.setString(std::to_string(level));
             }
+        }
+        if(setPause && square.getPosition().y != target.getSize().y)
+        {
+            target.setMouseCursorVisible(true);
+            Mouse::setPosition(Vector2i(Mouse::getPosition().x, Mouse::getPosition().y));
         }
     }
     else if(!menu.getGameStart() && !menu.getQuit())
     {
+        //Reset
+        square.setPosition(600.5f,-100.f);
+        level = 0;
+        square.setSize(Vector2f(100.f, 100.f));
+        catchCount = 0;
+        currentSpeed = speed;
+        Catch.setString(std::to_string(catchCount));
+        Speed.setString(std::to_string(currentSpeed));
+        Level.setString(std::to_string(level));
+
         menu.update(target);
     }
     else if(menu.getQuit())
@@ -219,6 +230,9 @@ void CatchTheBlock::update(Window& target)
     {
         target.setMouseCursorVisible(true);
         square2.setPosition(square2.getPosition().x, square2.getPosition().y);
-        //Mouse::setPosition(Vector2i(square2.getPosition().x + 350, square2.getPosition().y));
+        menu.update(target);
     }
+    time = clock.getElapsedTime();
+
+    clock.restart().asMilliseconds();
 }

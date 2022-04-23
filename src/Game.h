@@ -12,10 +12,12 @@ public:
     void update();
     void render();
     void updatePollEvents();
+    sf::RenderWindow* app;
 
 private:
+    const float frameLimit = 144.f;
     CatchTheBlock *game;
-    sf::RenderWindow* app;
+    const sf::Time TimePerFrame = sf::seconds(1.f/frameLimit);
     void initGame();
     void initWin();
 };

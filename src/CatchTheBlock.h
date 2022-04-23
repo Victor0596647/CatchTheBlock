@@ -12,7 +12,6 @@ class CatchTheBlock
 public:
     mainMenu menu;
     CatchTheBlock();
-    virtual ~CatchTheBlock();
     void render(RenderTarget& target);
     void update(Window& target);
     void setGameWin(bool Awin)
@@ -35,10 +34,11 @@ public:
     sf::RectangleShape square2;
 
 private:
-    Event evn;
-    float i = 0.550;
+    float currentSpeed = 0.520;
+    const float speed = 0.520;
     int level = 1;
     int catchCount = 0;
+    bool setPause = 0;
     bool Lost = 0;
     bool win = false;
     void initSprite();
@@ -59,12 +59,15 @@ private:
     Text LevelT;
     Text Score;
     Text ScoreT;
+    Text statusPause;
     Sound beep1;
     Sound levl;
     Sound lose;
     SoundBuffer buffer1;
     SoundBuffer buffer2;
     SoundBuffer buffer3;
+    Clock clock;
+    Time time;
 };
 
 #endif // CATCHTHEBLOCK_H

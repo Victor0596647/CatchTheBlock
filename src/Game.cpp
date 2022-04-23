@@ -21,15 +21,23 @@ void Game::initGame()
 
 void Game::initWin()
 {
-    this->app = new RenderWindow (VideoMode(1280, 720), "Catch The Block", Style::Close);
+    this->app = new RenderWindow(VideoMode(1280, 720), "Catch The Block", Style::Close);
     this->app->setKeyRepeatEnabled(false);
 }
 
 void Game::run()
 {
+    sf::Clock clock;
+    sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while(this->app->isOpen())
     {
-        updatePollEvents();
+        while (timeSinceLastUpdate > TimePerFrame)
+        {
+            timeSinceLastUpdate -= TimePerFrame;
+            updatePollEvents();
+            update();
+        }
+        timeSinceLastUpdate += clock.restart();
         render();
     }
 }
@@ -61,18 +69,15 @@ void Game::updatePollEvents()
             {
                 this->app->close();
             }
-            if(Keyboard::isKeyPressed(Keyboard::Key::P) && !game->getGameLose() && !game->getGameWin())
+            //Pausing game
+            if(Keyboard::isKeyPressed(Keyboard::Key::P) && !this->game->menu.getGamePause() && !this->game->getGameWin() && !this->game->getGameLose() && !this->game->menu.getSelecOption() && this->game->menu.getGameStart())
             {
-                if(game->menu.getGamePause() == false)
-                {
-                    game->menu.setGamePause(true);
-                }
-                else if(game->menu.getGamePause() == true)
-                {
-                    game->menu.setGamePause(false);
-                }
+                this->game->menu.setGamePause(true);
             }
-            break;
+            else if(Keyboard::isKeyPressed(Keyboard::Key::P) && this->game->menu.getGamePause() == true)
+            {
+                this->game->menu.setGamePause(false);
+            }
         }
     }
     update();
