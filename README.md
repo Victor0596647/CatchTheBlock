@@ -24,9 +24,8 @@ A game where YOU the player has to catch a sqaure that's falling before it reach
     - [x] Make Quit function
       - [x] Quits the window on click
 - [x] Create Pause Menu
-  - [ ] Return to Main Menu
+  - [x] Return to Main Menu
   - [x] Hotkey "P"
-  - [ ] Quit Game
 ## Credits <br>
 
 **Repository:** [CatchTheBlock](https://github.com/Victor0596647/CatchTheBlock)<br>
